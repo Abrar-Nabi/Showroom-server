@@ -1,53 +1,75 @@
+
+
 const express = require('express');
 const router = express.Router();
-const Appointment = require('../models/Booking');
+const Booking =
+	require('../models/Bookings');
 
-// Get all appointments
-router.get('/', async (req, res) => {
-    try {
-        const appointments = await Appointment.find();
-        res.json(appointments);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
+
+router.route('/').get((req, res) => {
+	Booking.find()
+		.then(Bookings =>
+			res.json(Bookings))
+		.catch(err =>
+			res.status(400).json('Error: ' + err));
 });
 
-// Add new appointment
-router.post('/add', async (req, res) => {
-    const { patientName, doctorName, date, phone, email, dob, diseaseType } = req.body;
-    try {
-        const newAppointment = new Appointment({ patientName, doctorName, date, phone, email, dob, diseaseType });
-        const savedAppointment = await newAppointment.save();
-        res.json(savedAppointment);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
+router.route('/add').post((req, res) => {
+	const { Name, date, phone, email,carModel,carVariant,carColour,testDrive,paymentType } = req.body;
+	const newBooking =
+		new Booking({ Name, date, phone, email,carModel,carVariant,carColour,testDrive,paymentType });
+
+	newBooking.save()
+		.then(savedBooking => res.json(savedBooking))
+		.catch(err => res.status(400).json('Error: ' + err));
 });
 
-// Update appointment data
-router.put('/update/:id', async (req, res) => {
-    try {
-        const appointment = await Appointment.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!appointment) {
-            return res.status(404).json({ error: 'Appointment not found' });
-        }
-        res.json('Appointment updated!');
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
+
+router.route('/update/:id').post((req, res) => {
+	Booking.findById(req.params.id)
+		.then(Booking => {
+			Booking.Name =
+				req.body.Name;
+			Booking.date =
+				req.body.date;
+				Booking.phone =
+				req.body.phone;
+				Booking.email =
+				req.body.email;
+				Booking.carModel =
+				req.body.carModel;
+				Booking.carVariant =
+				req.body.carVariant;
+				Booking.carColour =
+				req.body.carColour;
+				Booking.testDrive =
+				req.body.testDrive;
+				Booking.paymentType =
+				req.body.paymentType;
+
+			Booking.save()
+				.then(
+					() =>
+						res.json('Booking updated!'))
+				.catch(
+					err => res.status(400)
+						.json('Error: ' + err));
+		})
+		.catch(
+			err => res.status(400)
+				.json('Error: ' + err));
 });
 
-// Delete appointment
-router.delete('/delete/:id', async (req, res) => {
-    try {
-        const deletedAppointment = await Appointment.findByIdAndDelete(req.params.id);
-        if (!deletedAppointment) {
-            return res.status(404).json({ error: 'Appointment not found' });
-        }
-        res.json('Appointment deleted.');
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
-});
+
+router.route('/delete/:id')
+	.delete((req, res) => {
+		Booking.findByIdAndDelete(req.params.id)
+			.then(
+				() => res
+					.json('Booking deleted.'))
+			.catch(
+				err => res
+					.status(400).json('Error: ' + err));
+	});
 
 module.exports = router;

@@ -9,7 +9,7 @@ require('dotenv').config();
 
 // Import routes
 
-const appointmentsRouter = require('./routes/appointments');
+const bookingRouter = require('./routes/bookings');
 const adminRouter = require('./routes/auth');
 const allusers = require('./routes/getallusers');
 
@@ -41,7 +41,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key';
 
 // Routes
 
-app.use('/appointments', appointmentsRouter);
+app.use('/Bookings', bookingRouter);
 app.use('/allusers', allusers);
 app.use('/', adminRouter);
 
